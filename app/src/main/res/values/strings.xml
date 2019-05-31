@@ -1,0 +1,39 @@
+<resources>
+    <string name="app_name">Gallery</string>
+
+    <!-- fragment tags -->
+    <string name="fragment_folders">Fragment Folders</string>
+    <string name="fragment_list_gallery">Fragment Gallery List</string>
+    <string name="fragment_grid_gallery">Fragment Gallery Grid</string>
+    <string name="fragment_gallery_item">Fragment Item Gallery</string>
+    <string name="fragment_image_details">Fragment Image Details</string>
+    <string name="fragment_viewpager_gallery">Fragment ViewPager Gallery</string>
+    <string name="dialog_switch_folder">Dialog Switch Folder</string>
+    <string name="fragment_ucrop">Fragment uCrop</string>
+
+    <!-- widget texts -->
+    <string name="fragment_selector">Fragment Selector</string>
+    <string name="choose_folder">Choose folder</string>
+    <string name="camera">Camera</string>
+    <string name="pictures">Pictures</string>
+    <string name="information_about_photo">Information about photo</string>
+    <string name="meta_data_about_photo">Meta data about photo</string>
+    <string name="to_list">To List</string>
+    <string name="switch_folder">Switch Folder</string>
+    <string name="to_grid">To Grid</string>
+    <string name="share">Share</string>
+    <string name="set_as">Set as</string>
+    <string name="details">Details</string>
+    <string name="edit">Edit</string>
+
+    <!-- application constants -->
+    <string name="gallery_view">galleryView</string>
+    <string name="list">list</string>
+    <string name="pics_dir">picsDir</string>
+    <string name="position">position</string>
+    <string name="grid">grid</string>
+    <string name="picture_file">pictureFile</string>
+    <string name="images_folder">imagesFolder</string>
+    <string name="default_choice">defaultChoice</string>
+
+</resources>

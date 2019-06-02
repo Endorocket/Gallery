@@ -14,8 +14,11 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 
 import com.endorocket.gallery.IMainActivity;
 import com.endorocket.gallery.IOnBackPressed;
@@ -28,7 +31,7 @@ import java.util.ArrayList;
 
 public class GalleryListFragment extends Fragment implements RecyclerViewAdapter.OnImageListener, IOnBackPressed {
 
-    private static final String TAG = "GalleryGridFragment";
+    private static final String TAG = "GalleryListFragment";
 
     // widgets
     private ZoomLayout mZoomLayout;
@@ -60,19 +63,7 @@ public class GalleryListFragment extends Fragment implements RecyclerViewAdapter
 
         initImageBitmaps();
         initRecyclerView();
-
-        mZoomLayout.setHasClickableChildren(true);
-
-        DisplayMetrics dm = new DisplayMetrics();
-        getActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
-        float width = dm.widthPixels / dm.xdpi;
-        float height = dm.heightPixels / dm.ydpi;
-
-        Log.d("debug", "Width inches : " + width);
-        Log.d("debug", "Height inches : " + height);
-
-        mZoomLayout.setMinZoom(height / 5, ZoomLayout.TYPE_REAL_ZOOM);
-        mZoomLayout.setMaxZoom(height * 2 / 3, ZoomLayout.TYPE_REAL_ZOOM);
+        initZoomLayout();
 
         return view;
     }
@@ -132,6 +123,21 @@ public class GalleryListFragment extends Fragment implements RecyclerViewAdapter
         RecyclerViewAdapter adapter = new RecyclerViewAdapter(getContext(), mImagePaths, this);
         mRecyclerView.setAdapter(adapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        LayoutAnimationController animation = AnimationUtils.loadLayoutAnimation(getContext(), R.anim.layout_animation_from_left);
+        mRecyclerView.setLayoutAnimation(animation);
+    }
+
+    private void initZoomLayout() {
+        mZoomLayout.setHasClickableChildren(true);
+
+        DisplayMetrics dm = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
+        float width = dm.widthPixels / dm.xdpi;
+        float height = dm.heightPixels / dm.ydpi;
+
+        mZoomLayout.setMinZoom(height / 5, ZoomLayout.TYPE_REAL_ZOOM);
+        mZoomLayout.setMaxZoom(height * 2 / 3, ZoomLayout.TYPE_REAL_ZOOM);
     }
 
     @Override

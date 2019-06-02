@@ -3,14 +3,15 @@ package com.endorocket.gallery.fragments;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.transition.ChangeBounds;
+import android.support.transition.Transition;
+import android.support.transition.TransitionManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,8 +21,8 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
-
-import androidx.annotation.RequiresApi;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 
 import com.endorocket.gallery.IMainActivity;
 import com.endorocket.gallery.IOnBackPressed;
@@ -50,7 +51,6 @@ public class GalleryGridFragment extends Fragment implements RecyclerViewAdapter
         super.onCreate(savedInstanceState);
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -68,45 +68,7 @@ public class GalleryGridFragment extends Fragment implements RecyclerViewAdapter
 
         initImageBitmaps();
         initRecyclerView();
-
-        mScaleGestureDetector = new ScaleGestureDetector(getContext(), new ScaleGestureDetector.SimpleOnScaleGestureListener() {
-            @Override
-            public boolean onScale(ScaleGestureDetector detector) {
-
-                float currentSpan = detector.getCurrentSpan();
-                float previousSpan = detector.getPreviousSpan();
-
-                if (currentSpan > 300 && detector.getTimeDelta() > 300) {
-
-                    if (currentSpan - previousSpan < -1) {
-                        int currentGridColumns = mLayoutManager.getSpanCount();
-                        if (currentGridColumns < 8) {
-//                            TransitionManager.beginDelayedTransition(mRecyclerView);
-                            mLayoutManager.setSpanCount(currentGridColumns + 1);
-                        }
-                        return true;
-
-                    } else if (currentSpan - previousSpan > 1) {
-                        int currentGridColumns = mLayoutManager.getSpanCount();
-                        if (currentGridColumns > 2) {
-//                            TransitionManager.beginDelayedTransition(mRecyclerView);
-                            mLayoutManager.setSpanCount(currentGridColumns - 1);
-                        }
-                        return true;
-                    }
-                }
-                return false;
-            }
-        });
-
-
-        mRecyclerView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                mScaleGestureDetector.onTouchEvent(event);
-                return false;
-            }
-        });
+        initScaleGestureDetector();
 
         return view;
     }
@@ -164,8 +126,53 @@ public class GalleryGridFragment extends Fragment implements RecyclerViewAdapter
 
         RecyclerViewAdapter adapter = new RecyclerViewAdapter(getContext(), mImages, this);
         mRecyclerView.setAdapter(adapter);
-        mLayoutManager = new GridLayoutManager(getContext(), 4);
+        mLayoutManager = new GridLayoutManager(getContext(), 3);
         mRecyclerView.setLayoutManager(mLayoutManager);
+
+        LayoutAnimationController animation = AnimationUtils.loadLayoutAnimation(getContext(), R.anim.grid_layout_animation_from_corner);
+        mRecyclerView.setLayoutAnimation(animation);
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private void initScaleGestureDetector() {
+
+        mScaleGestureDetector = new ScaleGestureDetector(getContext(), new ScaleGestureDetector.SimpleOnScaleGestureListener() {
+            @Override
+            public boolean onScale(ScaleGestureDetector detector) {
+
+                float currentSpan = detector.getCurrentSpan();
+                float previousSpan = detector.getPreviousSpan();
+
+                if (currentSpan > 300 && detector.getTimeDelta() > 300) {
+
+                    int currentGridColumns = mLayoutManager.getSpanCount();
+
+                    if (currentSpan - previousSpan < -1 && currentGridColumns < 8) {
+
+                        TransitionManager.beginDelayedTransition(mRecyclerView);
+                        mLayoutManager.setSpanCount(currentGridColumns + 1);
+
+                        return true;
+
+                    } else if (currentSpan - previousSpan > 1 && currentGridColumns > 2) {
+
+                        Transition transition = new ChangeBounds();
+                        TransitionManager.beginDelayedTransition(mRecyclerView, transition);
+                        mLayoutManager.setSpanCount(currentGridColumns - 1);
+                    }
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        mRecyclerView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                mScaleGestureDetector.onTouchEvent(event);
+                return false;
+            }
+        });
     }
 
     @Override

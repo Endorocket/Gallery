@@ -15,6 +15,8 @@ import com.endorocket.gallery.IOnBackPressed;
 import com.endorocket.gallery.R;
 import com.endorocket.gallery.adapters.ExtendedViewPager;
 import com.endorocket.gallery.adapters.GalleryPageAdapter;
+import com.endorocket.gallery.tranformers.DepthPageTransformer;
+import com.endorocket.gallery.tranformers.HingeTransformer;
 import com.ortiz.touchview.TouchImageView;
 
 import java.io.File;
@@ -63,6 +65,8 @@ public class ViewPagerGalleryFragment extends Fragment implements IOnBackPressed
         GalleryPageAdapter pagerAdapter = new GalleryPageAdapter(getChildFragmentManager(), mFragments);
         mMyViewPager.setAdapter(pagerAdapter);
         mMyViewPager.setCurrentItem(position);
+
+        mMyViewPager.setPageTransformer(true, new HingeTransformer());
     }
 
     @Override

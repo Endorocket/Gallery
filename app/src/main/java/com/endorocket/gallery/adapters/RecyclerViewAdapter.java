@@ -2,12 +2,12 @@ package com.endorocket.gallery.adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -35,7 +35,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_listitem, viewGroup, false);
-
         ViewHolder holder = new ViewHolder(view, mOnImageListener);
         return holder;
     }
@@ -55,7 +54,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         return mImages.size();
     }
 
-
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         // widgets
@@ -68,14 +66,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             super(itemView);
 
             mImageView = itemView.findViewById(R.id.image);
-
-            mImageView.setMaxHeight(mImageView.getWidth());
-//            mImageView.setMinimumHeight(mImageView.getMinimumWidth());
-
-            Log.d(TAG, "ViewHolder: mImageView.getWidth(): " + mImageView.getWidth());
-
             mOnImageListener = onImageListener;
-
             mImageView.setOnClickListener(this);
         }
 

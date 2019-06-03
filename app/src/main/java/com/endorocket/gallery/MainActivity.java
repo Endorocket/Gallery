@@ -158,10 +158,8 @@ public class MainActivity extends AppCompatActivity implements IMainActivity {
     @Override
     public void onBackPressed() {
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.main_container);
-        Log.d(TAG, "onBackPressed: " + fragment.getTag());
         if (!(fragment instanceof IOnBackPressed) || !((IOnBackPressed) fragment).onBackPressed()) {
             super.onBackPressed();
         }
     }
-
 }

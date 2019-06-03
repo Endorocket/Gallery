@@ -1,6 +1,8 @@
 package com.endorocket.gallery.fragments;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -22,6 +24,7 @@ import com.ortiz.touchview.TouchImageView;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
+import java.io.IOException;
 
 public class ItemGalleryFragment extends Fragment {
 
@@ -54,8 +57,6 @@ public class ItemGalleryFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateView: called");
-
         View view = inflater.inflate(R.layout.fragment_gallery_item, container, false);
         setHasOptionsMenu(true);
 
@@ -68,8 +69,6 @@ public class ItemGalleryFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        Log.d(TAG, "onCreateOptionsMenu: called");
-
         inflater.inflate(R.menu.menu_image, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -78,16 +77,14 @@ public class ItemGalleryFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        Log.d(TAG, "onOptionsItemSelected: called " + id);
-
         switch (id) {
             case R.id.share:
-                Toast.makeText(getContext(), "Nie udostępniono", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), getString(R.string.no_functionality), Toast.LENGTH_SHORT).show();
                 return true;
 
             case R.id.set_as:
 //                final WallpaperManager wallpaperManager = WallpaperManager.getInstance(getContext());
-                Toast.makeText(getContext(), "Tapety nie ustawiono", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), getString(R.string.no_functionality), Toast.LENGTH_SHORT).show();
                 break;
 
             case R.id.details:
@@ -96,9 +93,8 @@ public class ItemGalleryFragment extends Fragment {
 
             case R.id.edit:
 
-                Uri uri = Uri.fromFile(mPictureFile);
-                Bundle bundle = new Bundle();
-                bundle.putParcelable("uri", uri);
+                Uri sourceUri = Uri.fromFile(mPictureFile);
+                Uri destinationUri = createDestinationUri();
 
                 int color = getResources().getColor(R.color.colorPrimary);
 
@@ -106,18 +102,31 @@ public class ItemGalleryFragment extends Fragment {
                 options.setToolbarColor(color);
                 options.setMaxScaleMultiplier(1.000001f);
 
-                UCrop.of(uri, uri)
+                UCrop.of(sourceUri, destinationUri)
                         .withOptions(options)
                         .useSourceImageAspectRatio()
                         .start(getContext(), this, UCrop.REQUEST_CROP);
 
                 return true;
-
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    private Uri createDestinationUri() {
+
+        String parentPath = mPictureFile.getParent();
+        String name = mPictureFile.getName();
+
+        int indexOfDot = name.lastIndexOf(".");
+        String extension = name.substring(indexOfDot);
+        String postfix = "-crop";
+
+        String newName = name.substring(0, indexOfDot) + postfix + extension;
+        String destinationPathname = parentPath + "/" + newName;
+
+        return Uri.fromFile(new File(destinationPathname));
+    }
 
     private void getIncomingBundle() {
 
@@ -128,13 +137,36 @@ public class ItemGalleryFragment extends Fragment {
     }
 
     private void setImage() {
-        Log.d(TAG, "setImage: called");
 
         Glide.with(getContext())
                 .asBitmap()
                 .placeholder(R.color.colorPrimaryDark)
                 .load(mPictureFile.getAbsolutePath())
                 .into(mImageView);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (resultCode == Activity.RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
+            final Uri resultUri = UCrop.getOutput(data);
+            
+            File saveFile = new File(resultUri.getPath());
+            boolean done = false;
+            try {
+                done = saveFile.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            Log.d(TAG, "onActivityResult: SAVED FILE: " + done + " " + saveFile.getPath());
+            Toast.makeText(getContext(), "Cropped photo created", Toast.LENGTH_SHORT).show();
+
+        } else if (resultCode == UCrop.RESULT_ERROR) {
+            Log.e(TAG, "onActivityResult: NOPE");
+            final Throwable cropError = UCrop.getError(data);
+            Toast.makeText(getContext(), cropError.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override

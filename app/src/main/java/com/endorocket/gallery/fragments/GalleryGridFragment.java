@@ -35,6 +35,7 @@ import java.util.ArrayList;
 public class GalleryGridFragment extends Fragment implements RecyclerViewAdapter.OnImageListener, IOnBackPressed {
 
     private static final String TAG = "GalleryListFragment";
+    private static final String COLUMNS = "Columns";
 
     // widgets
     private RecyclerView mRecyclerView;
@@ -124,9 +125,12 @@ public class GalleryGridFragment extends Fragment implements RecyclerViewAdapter
     private void initRecyclerView() {
         Log.d(TAG, "initRecyclerView: init recyclerview");
 
+        SharedPreferences sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
+        int columns = sharedPreferences.getInt(COLUMNS, 3);
+
         RecyclerViewAdapter adapter = new RecyclerViewAdapter(getContext(), mImages, this);
         mRecyclerView.setAdapter(adapter);
-        mLayoutManager = new GridLayoutManager(getContext(), 3);
+        mLayoutManager = new GridLayoutManager(getContext(), columns);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         LayoutAnimationController animation = AnimationUtils.loadLayoutAnimation(getContext(), R.anim.grid_layout_animation_from_corner);
@@ -177,12 +181,6 @@ public class GalleryGridFragment extends Fragment implements RecyclerViewAdapter
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        mIMainActivity = (IMainActivity) getActivity();
-    }
-
-    @Override
     public void onImageClick(int position) {
         Log.d(TAG, "onImageClick: called");
 
@@ -194,6 +192,24 @@ public class GalleryGridFragment extends Fragment implements RecyclerViewAdapter
         bundle.putInt(getString(R.string.position), position);
 
         mIMainActivity.inflateFragment(getString(R.string.fragment_viewpager_gallery), bundle);
+    }
+
+    @Override
+    public void onPause() {
+        Log.d(TAG, "onPause: called");
+
+        SharedPreferences sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(COLUMNS, mLayoutManager.getSpanCount());
+        editor.apply();
+
+        super.onPause();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mIMainActivity = (IMainActivity) getActivity();
     }
 
     @Override

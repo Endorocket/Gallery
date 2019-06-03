@@ -159,8 +159,9 @@ public class GalleryGridFragment extends Fragment implements RecyclerViewAdapter
                         Transition transition = new ChangeBounds();
                         TransitionManager.beginDelayedTransition(mRecyclerView, transition);
                         mLayoutManager.setSpanCount(currentGridColumns - 1);
+
+                        return true;
                     }
-                    return true;
                 }
                 return false;
             }

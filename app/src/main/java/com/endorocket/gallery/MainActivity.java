@@ -46,7 +46,6 @@ public class MainActivity extends AppCompatActivity implements IMainActivity {
         }
     }
 
-
     private void program() {
 
         final SharedPreferences sharedPreferences = getPreferences(Context.MODE_PRIVATE);
@@ -84,7 +83,6 @@ public class MainActivity extends AppCompatActivity implements IMainActivity {
                 doFragmentTransaction(gridFragment, getString(R.string.fragment_grid_gallery), false, bundle);
             }
         }
-
     }
 
     public void doFragmentTransaction(Fragment fragment, String tag, boolean addToBackStack, Bundle bundle) {

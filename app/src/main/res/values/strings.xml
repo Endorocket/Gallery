@@ -35,5 +35,6 @@
     <string name="picture_file">pictureFile</string>
     <string name="images_folder">imagesFolder</string>
     <string name="default_choice">defaultChoice</string>
+    <string name="no_functionality">No functionality yet</string>
 
 </resources>
